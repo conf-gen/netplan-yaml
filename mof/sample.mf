@@ -1,0 +1,100 @@
+<setting>
+    <tag load="mofron-comp-codeprettify">Code</tag>
+    <tag load="mofron-comp-inputtext">InputTxt</tag>
+    <tag load="mofron-comp-dropdown">DropDown</tag>
+    <tag load="mofron-comp-frame">Frame</tag>
+    <tag load="mofron-comp-button">Button</tag>
+    <tag load="mofron-comp-ujarak">Ujarak</tag>
+    <tag load="mofron-comp-winona">Winona</tag>
+    <tag load="mofron-effect-vrtpos">VrtPos</tag>
+    <tag load="../js/comp/SampleCodes.js">SampleCodes</tag>
+</setting>
+
+<script run=init>
+let smp_mod_evt = (cmp,val) => {
+    try {
+        let chd   = smp_mod.child()[1].child();
+        let bname = smp_mod_sel.text()[smp_mod_sel.select()];
+        let cbuf  = smp_mod.confmng("codebuf");
+        if (null === cbuf) {
+            return;
+        }
+        
+        /* result button event */
+        if (true === comutl.isinc(cmp,"Button")) {
+            alert("mofron-comp-" + bname);
+            return;
+        }
+        
+        /* button visible */
+        for (let cidx in chd) {
+            chd[cidx].visible(false);
+        }
+        chd[smp_mod_sel.select()].visible(true);
+        
+        /* button select */
+        cbuf = cbuf.replace(/@btn-name/g, "mofron-comp-" + bname);
+        
+        /* button width */
+        for (let cidx in chd) {
+            chd[cidx].width(smp_mod_wid.value() + "rem");
+        }
+        cbuf = cbuf.replace(/@btn-width/g, smp_mod_wid.value() + "rem");
+        
+        /* button height */
+        for (let cidx in chd) {
+            chd[cidx].height(smp_mod_hei.value() + "rem");
+        }
+        cbuf = cbuf.replace(/@btn-height/g, smp_mod_hei.value() + "rem");
+
+        smp_mod.code(cbuf);
+        
+    } catch (e) {
+        console.error(e.stack);
+        throw e;
+    }
+}
+</script>
+
+<div>
+    <layout>
+        <HrzCent>70</HrzCent>
+        <Margin>top,0.5rem</Margin>
+    </layout>
+    <Text size="0.45rem" effect=HrzPos>Sample</Text>
+    <SampleCodes name=smp_mod src="./sample/module.mf" load-event=@smp_mod_evt>
+        <desc>
+            aaa
+        </desc>
+        <edit>
+            <DropDown name=smp_mod_sel effect=VrtPos change-event=@smp_mod_evt>
+                <size>1rem,0.3rem</size>
+                <text>[button,ujarak,winona]</text>
+            </DropDown>
+            <InputTxt name=smp_mod_wid width=0.8rem type="number" horizon=true change-event=@smp_mod_evt>
+                <label>width:</label>
+                <value>1.5</value>
+                <suffix>rem</suffix>
+            </InputTxt>
+            <InputTxt name=smp_mod_hei width=0.8rem type="number" horizon=true change-event=@smp_mod_evt>
+                <label>height:</label>
+                <value>0.3</value>
+                <suffix>rem</suffix>
+            </InputTxt>
+        </edit>
+        <!-- result -->
+        <div>
+            <theme>
+                <Text:config style="font-family:null;"></Text:config>
+                <Button:config click-event=@smp_mod_evt>
+                    <color>#787878,#f0e6fa,#3f51b5</color>
+                    <style margin=0.5rem></style>
+                </Button:config>
+            </theme>
+            <Button>button</Button>
+            <Ujarak>button</Ujarak>
+            <Winona>button</Winona>
+        </div>
+    </SampleCodes>
+</div>
+

@@ -1,0 +1,125 @@
+<setting>
+    <!-- component -->
+    <tag load="mofron-comp-appbase">AppBase</tag>
+    <tag load="mofron-comp-heading">Heading</tag>
+    <tag load="mofron-comp-form">Form</tag>
+    <tag load="mofron-comp-dropdown">DropDown</tag>
+    <tag load="mofron-comp-input">Input</tag>
+    <tag load="mofron-comp-checkbox">Check</tag>
+    <tag load="mofron-comp-frame">Frame</tag>
+    <tag load="mofron-comp-dev">IpAddr</tag>
+    <tag load="mofron-comp-button">Button</tag>
+    <tag load="mofron-comp-text">Text</tag>
+    <tag load="mofron-comp-code">Code</tag>
+    <tag load="mofron-comp-footer">Footer</tag>
+    <tag load="mofron-effect-fade">Fade</tag>
+    <tag load="mofron-effect-hrzpos">HrzPos</tag>
+    <tag load="mofron-layout-margin">Margin</tag>
+    <tag load="mofron-layout-grid">Grid</tag>
+    <tag load="mofron-layout-hrzcenter">HrzCent</tag>
+    <root-conf>
+        <effect:Fade>true,1000</effect:Fade>
+        <theme>
+            <Text:config color='#787878' font="'Major Mono Display'"></Text:config>
+        </theme>
+    </root-conf>
+</setting>
+
+<script src="./mof/generate.js" run=init></script>
+
+<script run=init>
+let disable = (d1,d2,d3) => {
+    try {
+        let grp = ("ethchk" === d1.name()) ? ethgrp : wifigrp;
+        grp.visible(!d2);
+    } catch (e) {
+        console.error(e.stack);
+        throw e;
+    }
+}
+let addr_type = (t1,t2,t3) => {
+    try {
+        let is_manual = (1 === t2) ? true : false;
+        addr.status(is_manual);
+        subnet.status(is_manual);
+        gateway.status(is_manual);
+        namesrv.status(is_manual);
+    } catch (e) {
+        console.error(e.stack);
+        throw e;
+    }
+}
+</script>
+
+<AppBase color='#ccd1f5' base-color='#fafafa' title=(CONF-GEN,"./img/icon_b.png")>
+    <Heading style="padding:0.5rem;">netplan yaml</Heading>
+    <div layout=Grid:[50,50]>
+        <div layout=HrzCent:80>
+            <div style="display:flex;align-items:center;">
+                <Text text="Ethernet:" size=0.3rem>
+                    <style lock=true>font-family:monospace;</style>
+                </Text>
+                <Check name=ethchk style="margin-left:0.3rem;" change-event=@disable>
+                    disable,false
+                </Check>
+            </div>
+            <div layout=HrzCent:70>
+                <div name=ethgrp layout=Margin:(top,0.3rem)>
+                    <theme>
+                        <FormItem:config width=100%></FormItem:config>
+                    </theme>
+                    <Input name=ifname label="interface name"></Input>
+                    <DropDown name=addrtype change-event=@addr_type height=0.25rem>
+                        <label>address</label>
+                        <text>[DHCP,Manual]</text>
+                    </DropDown>
+                    <div>
+                        <IpAddr name=addr label="ipaddress" status=false>[192,168,1,1]</IpAddr>
+                        <DropDown name=subnet label=subnet height=0.25rem effect=HrzPos:right>
+                            <status>false</status>
+                            <select>9</select>
+                            <width lock=true>0.9rem</width>
+                            <text>[/10,/16,/17,/18,/19,/20,/21,/22,/23,/24,/25,/26,/27,/28,/29,/30,/31,/32]</text>
+                        </DropDown>
+                    </div>
+                    <IpAddr name=gateway label="gateway" status=false>[192,168,1,254]</IpAddr>
+                    <div>
+                        <IpAddr name=namesrv label="nameserver" status=false>[8,8,8,8]</IpAddr>
+                    </div>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;margin-top:0.3rem;">
+                <Text text="WiFi:" size=0.3rem>
+                    <style lock=true>font-family:monospace;</style>
+                </Text>
+                <Check name=wifichk style="margin-left:0.3rem;" change-event=@disable>
+                    disable,true
+                </Check>
+            </div>
+            <div layout=HrzCent:70>
+                <div name=wifigrp layout=Margin:(top,0.3rem)>
+                    <theme>
+                        <FormItem:config width=100%></FormItem:config>
+                    </theme>
+                    <Input name=w_ifname label="interface name"></Input>
+                    <Input name=ssid label="ssid"></Input>
+                    <Input name=passwd label="password" type=password></Input>
+                </div>
+            </div>
+            <Button name=gen_btn click-event=@generate>
+                <style>margin-top:0.3rem;</style>
+                <height>0.4rem</height>
+                <text>Generate</text>
+            </Button>
+        </div>
+        <div>
+            <Text size=0.3rem>result:</Text>
+            <Frame name=result size=(90%,@null)>
+                <Code name=retcode>
+                    <style lock=true>font-family:monospace;</style>
+                </Code>
+            </Frame>
+        </div>
+    </div>
+    <Footer color='#ccd1f5' style="margin-top:0.3rem;" height=0.5rem></Footer>
+</AppBase>
